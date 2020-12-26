@@ -1,0 +1,17 @@
+# tools
+.vs
+.vscode
+
+# dependency dirs
+sfml
+
+# generated stuff
+Release
+Debug
+*.o
+lidarvis
+
+# other
+*.user
+*.xcf
+.DS_Store

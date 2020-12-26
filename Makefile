@@ -1,0 +1,39 @@
+ROOT := ${CURDIR}
+
+CXX := g++
+CPPFLAGS := -std=c++17
+LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS += -L$(ROOT)/sfml/lib
+INCLUDES := -I$(ROOT)/sfml/include -I$(ROOT)/include
+
+pcv: main.o app.o cloud.o cloud-grabbers.o guis.o scenarios.o
+	$(CXX) --output pcv \
+	main.o \
+	app.o \
+	cloud.o \
+	cloud-grabbers.o \
+	guis.o \
+	scenarios.o \
+	$(LDFLAGS) \
+	$(LIBS)
+
+main.o: src/main.cpp
+	$(CXX) $(CPPFLAGS) -c src/main.cpp $(INCLUDES)
+
+app.o: src/app.cpp
+	$(CXX) $(CPPFLAGS) -c src/app.cpp $(INCLUDES)
+
+cloud.o: src/cloud.cpp
+	$(CXX) $(CPPFLAGS) -c src/cloud.cpp $(INCLUDES)
+
+cloud-grabbers.o: src/cloud-grabbers.cpp
+	$(CXX) $(CPPFLAGS) -c src/cloud-grabbers.cpp $(INCLUDES)
+
+guis.o: src/guis.cpp
+	$(CXX) $(CPPFLAGS) -c src/guis.cpp $(INCLUDES)
+
+scenarios.o: src/scenarios.cpp
+	$(CXX) $(CPPFLAGS) -c src/scenarios.cpp $(INCLUDES)
+
+clean:
+	rm -f *.o src/*.o pcv
