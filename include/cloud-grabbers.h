@@ -31,7 +31,7 @@ class SingleCloudGrabber : public CloudGrabber {
   bool read(Cloud& cloud) override;
 
  private:
-  std::istream input_stream_;
+  std::istream* input_stream_;
   float rot_angle_;
   Cloud cloud_;
 };

@@ -1,23 +1,30 @@
 #include "cloud-grabbers.h"
 
 SingleCloudGrabber::SingleCloudGrabber(std::istream& input_stream, float rot_angle) {
-  input_stream_ = input_stream;
+  std::cout << "here 1" << std::endl;
+  input_stream_ = &input_stream;
+  std::cout << "here 2" << std::endl;
   rot_angle_ = rot_angle;
   ok_ = input_stream.good();
   if (!ok_) {
     std::cerr << "error: file does not contain a valid cloud" << std::endl;
     ok_ = false;
   }
+
+  std::cout << "here 3" << std::endl;
 }
 
 bool SingleCloudGrabber::read(Cloud& cloud) {
-  if (!ok_)
+  if (!ok_) {
     return false;
+  }
 
   if (cloud_.size == 0) {
-    while (input_stream_) {
+    std::cout << "here 4" << std::endl;
+    while (std::cin) {
+      std::cout << "here 5" << std::endl;
       std::string line;
-      std::getline(input_stream_, line);
+      std::getline(std::cin, line);
 
       if (line.empty() || line[0] == '#') {
         continue;
@@ -146,5 +153,6 @@ bool CloudFileSeriesGrabber::open() {
     std::cerr << "rrror: file does not contain a valid cloud series" << std::endl;
     ok_ = false;
   }
+
   return ok_;
 }
