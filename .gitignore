@@ -1,16 +1,17 @@
 # tools
-.vs
-.vscode
+.vs/
+.vscode/
+.idea/
 
 # dependency dirs
-sfml
+sfml/
 
 # generated stuff
 Release
 Debug
 *.o
 /pcv
-/datasets
+/datasets/
 
 # other
 *.user

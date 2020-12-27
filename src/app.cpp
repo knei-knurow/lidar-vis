@@ -7,20 +7,20 @@ App::App(std::vector<std::string>& args) {
   }
 }
 
-App::~App() {}
+App::~App() = default;
 
 int App::run() {
   Cloud cloud;
 
   while (running_) {
-    // Grab cloud
+    // Grab a single cloud from the input...
     if (running_ && cloud_grabber_) {
       if (!cloud_grabber_->read(cloud)) {
         running_ = false;
       }
     }
 
-    // Update the GUI with new data
+    // ..and visualize it in the GUI
     // Save output files on user's request
     if (running_ && gui_) {
       if (!gui_->update(cloud)) {
@@ -140,11 +140,11 @@ bool App::parse_args(std::vector<std::string>& args) {
   // Initialize the cloud grabber
   if (!cloud_series_filename.empty()) {
     cloud_grabber_ = std::make_unique<CloudFileSeriesGrabber>(cloud_series_filename);
-    if (!cloud_grabber_->get_status())
+    if (!cloud_grabber_->is_ok())
       cloud_grabber_.reset(nullptr);
   } else if (!cloud_filename.empty()) {
     cloud_grabber_ = std::make_unique<CloudFileGrabber>(cloud_filename, 0.2);
-    if (!cloud_grabber_->get_status())
+    if (!cloud_grabber_->is_ok())
       cloud_grabber_.reset(nullptr);
   }
   if (!cloud_grabber_ && !gui_ && !scenario_) {

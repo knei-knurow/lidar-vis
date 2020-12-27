@@ -5,18 +5,18 @@
 
 class App {
  public:
-  App(std::vector<std::string>& args);
+  explicit App(std::vector<std::string>& args);
   ~App();
 
   int run();
-  void print_help();
+  static void print_help();
 
  private:
-  bool check_arg(std::vector<std::string>& all_args,
+  static bool check_arg(std::vector<std::string>& all_args,
                  const std::string& short_arg,
                  const std::string& long_arg);
 
-  std::string get_arg_value(std::vector<std::string>& all_args,
+  static std::string get_arg_value(std::vector<std::string>& all_args,
                             const std::string& short_arg,
                             const std::string& long_arg,
                             const std::string& default_value = "");

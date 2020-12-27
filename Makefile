@@ -6,7 +6,7 @@ LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 LDFLAGS += -L$(ROOT)/sfml/lib
 INCLUDES := -I$(ROOT)/sfml/include -I$(ROOT)/include
 
-pcv: main.o app.o cloud.o cloud-grabbers.o gui.o scenarios.o
+all: main.o app.o cloud.o cloud-grabbers.o gui.o scenarios.o
 	$(CXX) --output pcv \
 	main.o \
 	app.o \
