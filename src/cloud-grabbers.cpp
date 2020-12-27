@@ -1,28 +1,26 @@
 #include "cloud-grabbers.h"
 
-SingleCloudGrabber::SingleCloudGrabber(std::istream& input_stream, float rot_angle) {
-  std::cout << "here 1" << std::endl;
-  input_stream_ = &input_stream;
-  std::cout << "here 2" << std::endl;
+SingleCloudGrabber::SingleCloudGrabber(float rot_angle) {
   rot_angle_ = rot_angle;
-  ok_ = input_stream.good();
+  ok_ = std::cin.good();
   if (!ok_) {
     std::cerr << "error: file does not contain a valid cloud" << std::endl;
     ok_ = false;
   }
-
-  std::cout << "here 3" << std::endl;
 }
 
+/**
+ * Read reads from stdin and assign the result to its cloud parameter.
+ * @param cloud Pointer to the cloud to which the read data will be put.
+ * @return true if reading was successful, false otherwise
+ */
 bool SingleCloudGrabber::read(Cloud& cloud) {
   if (!ok_) {
     return false;
   }
 
   if (cloud_.size == 0) {
-    std::cout << "here 4" << std::endl;
     while (std::cin) {
-      std::cout << "here 5" << std::endl;
       std::string line;
       std::getline(std::cin, line);
 
@@ -69,15 +67,13 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
   return ok_;
 }
 
-CloudFileSeriesGrabber::CloudFileSeriesGrabber(const std::string& filename) {
-  filename_ = filename;
+CloudSeriesGrabber::CloudSeriesGrabber() {
   cloud_count_ = 0;
-  file_.open(filename_);
   open();
   next_cloud_time_ = std::chrono::steady_clock::now();
 }
 
-bool CloudFileSeriesGrabber::read(Cloud& cloud) {
+bool CloudSeriesGrabber::read(Cloud& cloud) {
   if (!ok_) {
     return false;
   }
@@ -91,9 +87,9 @@ bool CloudFileSeriesGrabber::read(Cloud& cloud) {
   }
 
   cloud = Cloud();
-  while (file_.good()) {
+  while (std::cin.good()) {
     std::string line;
-    std::getline(file_, line);
+    std::getline(std::cin, line);
     PointCyl pt_cyl;
     std::stringstream sline(line);
 
@@ -132,25 +128,25 @@ bool CloudFileSeriesGrabber::read(Cloud& cloud) {
   if (cloud.size == 0) {
     std::cerr << "Cloud series end." << std::endl;
     next_cloud_time_ += std::chrono::milliseconds(1000);
-    file_.clear();
-    file_.seekg(0);
+    std::cin.clear();
+    std::cin.seekg(0);
     ok_ = open();
   }
 
   return ok_;
 }
 
-bool CloudFileSeriesGrabber::open() {
-  while (file_.good()) {
+bool CloudSeriesGrabber::open() {
+  while (std::cin.good()) {
     std::string line;
-    std::getline(file_, line);
+    std::getline(std::cin, line);
     if (line.empty() || line[0] == '!') {
       break;
     }
   }
 
-  if (!file_.good()) {
-    std::cerr << "rrror: file does not contain a valid cloud series" << std::endl;
+  if (!std::cin.good()) {
+    std::cerr << "error: file does not contain a valid cloud series" << std::endl;
     ok_ = false;
   }
 

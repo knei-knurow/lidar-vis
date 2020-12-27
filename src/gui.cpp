@@ -163,8 +163,9 @@ void GUI::render_cloud_bars(const Cloud& cloud) {
     if (settings_.colormap == GUISettings::FROM_ANGLE) {
       color = calc_color_from_angle(float(j * cloud.size / settings_.height) / float(cloud.size));
     } else if (settings_.colormap == GUISettings::FROM_DIST) {
-      color = calc_color_from_dist(cloud.points_cyl[size_t(j * cloud.size / settings_.height)].distance,
-                                   cloud.max_distance, 1.0);
+      color =
+          calc_color_from_dist(cloud.points_cyl[size_t(j * cloud.size / settings_.height)].distance,
+                               cloud.max_distance, 1.0);
     }
 
     auto rect = sf::RectangleShape(sf::Vector2f(width, 1));

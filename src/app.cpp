@@ -42,9 +42,9 @@ void App::print_help() {
             << "\tpcv [options]\n"
             << "\n"
             << "Options:\n"
-            << "\tInput (required):\n"
-            << "\t-f  --file [filename]          input cloud filename\n"
-            << "\t-fs --file-series [filename]   input cloud series filename\n"
+            << "\tVisualization modes\n"
+            << "\t[default]                      single point cloud"
+            << "\t-cs  --cloud-series            point cloud series\n"
             << "\n"
             << "\tGeneral:\n"
             << "\t-h  --help                     display help\n"
@@ -116,13 +116,7 @@ bool App::parse_args(std::vector<std::string>& args) {
     return false;
   }
 
-  bool read_from_stdin = check_arg(args, "-i", "--stdin");
-
-  // Input cloud filename
-  std::string cloud_filename = get_arg_value(args, "-f", "--file");
-
-  // Input cloud series filename
-  std::string cloud_series_filename = get_arg_value(args, "-fs", "--file-series");
+  bool cloud_series = check_arg(args, "-cs", "--cloud-series");
 
   // Scenario
   std::string scenario_val =
@@ -140,19 +134,13 @@ bool App::parse_args(std::vector<std::string>& args) {
   }
 
   // Initialize the cloud grabber
-  if (read_from_stdin) {
-    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(std::cin, 0.2);
+  if (!cloud_series) {
+    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(0.2);
     if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
     }
-  } else if (!cloud_filename.empty()) {
-    auto input_stream = std::ifstream(cloud_filename);
-    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(input_stream, 0.2);
-    if (!cloud_grabber_->is_ok()) {
-      cloud_grabber_.reset(nullptr);
-    }
-  } else if (!cloud_series_filename.empty()) {
-    cloud_grabber_ = std::make_unique<CloudFileSeriesGrabber>(cloud_series_filename);
+  } else {
+    cloud_grabber_ = std::make_unique<CloudSeriesGrabber>();
     if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
     }
