@@ -116,6 +116,8 @@ bool App::parse_args(std::vector<std::string>& args) {
     return false;
   }
 
+  bool read_from_stdin = check_arg(args, "-i", "--stdin");
+
   // Input cloud filename
   std::string cloud_filename = get_arg_value(args, "-f", "--file");
 
@@ -138,15 +140,24 @@ bool App::parse_args(std::vector<std::string>& args) {
   }
 
   // Initialize the cloud grabber
-  if (!cloud_series_filename.empty()) {
-    cloud_grabber_ = std::make_unique<CloudFileSeriesGrabber>(cloud_series_filename);
-    if (!cloud_grabber_->is_ok())
+  if (read_from_stdin) {
+    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(std::cin, 0.2);
+    if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
+    }
   } else if (!cloud_filename.empty()) {
-    cloud_grabber_ = std::make_unique<CloudFileGrabber>(cloud_filename, 0.2);
-    if (!cloud_grabber_->is_ok())
+    auto input_stream = std::ifstream(cloud_filename);
+    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(input_stream, 0.2);
+    if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
+    }
+  } else if (!cloud_series_filename.empty()) {
+    cloud_grabber_ = std::make_unique<CloudFileSeriesGrabber>(cloud_series_filename);
+    if (!cloud_grabber_->is_ok()) {
+      cloud_grabber_.reset(nullptr);
+    }
   }
+
   if (!cloud_grabber_ && !gui_ && !scenario_) {
     print_help();
     return false;

@@ -25,13 +25,13 @@ class CloudGrabber {
   bool ok_;
 };
 
-class CloudFileGrabber : public CloudGrabber {
+class SingleCloudGrabber : public CloudGrabber {
  public:
-  explicit CloudFileGrabber(const std::string& filename, float rot_angle_ = 0.0f);
+  explicit SingleCloudGrabber(std::istream& input_stream, float rot_angle_ = 0.0f);
   bool read(Cloud& cloud) override;
 
  private:
-  std::string filename_;
+  std::istream input_stream_;
   float rot_angle_;
   Cloud cloud_;
 };
