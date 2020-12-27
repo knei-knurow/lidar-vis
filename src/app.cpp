@@ -180,8 +180,7 @@ bool App::parse_args(std::vector<std::string>& args) {
   if (scenario_type == ScenarioType::RECORD_SERIES) {
     scenario_ = std::make_unique<RecordSeriesScenario>();
   } else if (scenario_type == ScenarioType::SCREENSHOT_SERIES) {
-    auto gui_ptr = static_cast<GUI*>(gui_.get());
-    std::function<bool(void)> fn_ptr = std::bind(&GUI::save_screenshot, gui_ptr);
+    std::function<bool(void)> fn_ptr = std::bind(&GUI::save_screenshot, gui_.get());
     scenario_ = std::make_unique<ScreenshotSeriesScenario>(fn_ptr);
   }
 

@@ -1,4 +1,4 @@
-#include "guis.h"
+#include "gui.h"
 
 GUI::GUI(const GUISettings& settings) {
   sets_ = settings;

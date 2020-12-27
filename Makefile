@@ -6,13 +6,13 @@ LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 LDFLAGS += -L$(ROOT)/sfml/lib
 INCLUDES := -I$(ROOT)/sfml/include -I$(ROOT)/include
 
-pcv: main.o app.o cloud.o cloud-grabbers.o guis.o scenarios.o
+pcv: main.o app.o cloud.o cloud-grabbers.o gui.o scenarios.o
 	$(CXX) --output pcv \
 	main.o \
 	app.o \
 	cloud.o \
 	cloud-grabbers.o \
-	guis.o \
+	gui.o \
 	scenarios.o \
 	$(LDFLAGS) \
 	$(LIBS)
@@ -29,8 +29,8 @@ cloud.o: src/cloud.cpp
 cloud-grabbers.o: src/cloud-grabbers.cpp
 	$(CXX) $(CPPFLAGS) -c src/cloud-grabbers.cpp $(INCLUDES)
 
-guis.o: src/guis.cpp
-	$(CXX) $(CPPFLAGS) -c src/guis.cpp $(INCLUDES)
+gui.o: src/gui.cpp
+	$(CXX) $(CPPFLAGS) -c src/gui.cpp $(INCLUDES)
 
 scenarios.o: src/scenarios.cpp
 	$(CXX) $(CPPFLAGS) -c src/scenarios.cpp $(INCLUDES)
