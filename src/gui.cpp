@@ -1,14 +1,14 @@
 #include "gui.h"
 
 GUI::GUI(const GUISettings& settings) {
-  sets_ = settings;
-  sets_.origin_x = sets_.width / 2;
-  sets_.origin_y = sets_.height / 2;
+  settings_ = settings;
+  settings_.origin_x = settings_.width / 2;
+  settings_.origin_y = settings_.height / 2;
 
   sf::ContextSettings window_settings;
-  window_settings.antialiasingLevel = sets_.antialiasing;
+  window_settings.antialiasingLevel = settings_.antialiasing;
 
-  window_.create(sf::VideoMode(sets_.width, sets_.height), "Lidar",
+  window_.create(sf::VideoMode(settings_.width, settings_.height), "Lidar",
                  sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize, window_settings);
 
   for (int i = 0; i < int(StatusKey::COUNT); i++) {
@@ -19,36 +19,36 @@ GUI::GUI(const GUISettings& settings) {
 }
 
 bool GUI::update(const Cloud& cloud) {
-  if (!sets_.running) {
+  if (!settings_.running) {
     window_.close();
     return false;
   }
 
   handle_input(cloud);
-  window_.clear(sets_.color_background);
+  window_.clear(settings_.color_background);
 
-  if (sets_.render_grid) {
+  if (settings_.render_grid) {
     render_grid();
   }
 
   if (cloud.size > 0) {
-    if (sets_.autoscale) {
-      auto new_scale = calc_scale(cloud.max);
-      if (new_scale >= sets_.scale * 1.1 || new_scale <= sets_.scale * 0.9)
-        sets_.scale = new_scale;
+    if (settings_.autoscale) {
+      auto new_scale = calc_scale(cloud.max_distance);
+      if (new_scale >= settings_.scale * 1.1 || new_scale <= settings_.scale * 0.9)
+        settings_.scale = new_scale;
     }
 
-    if (sets_.render_grid) {
+    if (settings_.render_grid) {
       render_cloud_bars(cloud);
     }
 
-    render_front_line(cloud.pts_cart.front().x, cloud.pts_cart.front().y);
+    render_front_line(cloud.points_cart.front().x, cloud.points_cart.front().y);
 
-    if (sets_.pts_display_mode == GUISettings::DOTS_LINES) {
+    if (settings_.pts_display_mode == GUISettings::DOTS_LINES) {
       render_connected_cloud(cloud);
-    } else if (sets_.pts_display_mode == GUISettings::DOTS) {
+    } else if (settings_.pts_display_mode == GUISettings::DOTS) {
       render_cloud(cloud);
-    } else if (sets_.pts_display_mode == GUISettings::LINES) {
+    } else if (settings_.pts_display_mode == GUISettings::LINES) {
       render_connected_cloud(cloud, 1.0, false);
     }
   }
@@ -56,8 +56,8 @@ bool GUI::update(const Cloud& cloud) {
   render_point(0, 0, Color::Red);
 
   window_.display();
-  window_.setTitle("Scale: 1mm ->" + std::to_string(sets_.scale) + "px");
-  sf::sleep(sf::milliseconds(sets_.sleep_time_ms));
+  window_.setTitle("Scale: 1mm ->" + std::to_string(settings_.scale) + "px");
+  sf::sleep(sf::milliseconds(settings_.sleep_time_ms));
   return true;
 }
 
@@ -65,16 +65,16 @@ void GUI::handle_input(const Cloud& cloud) {
   sf::Event event;
   while (window_.pollEvent(event)) {
     if (event.type == sf::Event::Resized) {
-      sets_.width = event.size.width;
-      sets_.height = event.size.height;
-      sets_.origin_x = event.size.width / 2;
-      sets_.origin_y = event.size.height / 2;
+      settings_.width = event.size.width;
+      settings_.height = event.size.height;
+      settings_.origin_x = event.size.width / 2;
+      settings_.origin_y = event.size.height / 2;
       sf::FloatRect visible_area(0, 0, event.size.width, event.size.height);
       window_.setView(sf::View(visible_area));
       std::cout << "Window resized: " << event.size.width << "x" << event.size.height << std::endl;
     }
     if (event.type == sf::Event::Closed)
-      sets_.running = false;
+      settings_.running = false;
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Up)
         status_keys_[int(StatusKey::UP)] = true;
@@ -89,25 +89,26 @@ void GUI::handle_input(const Cloud& cloud) {
         save_screenshot();
 
       if (event.key.code == sf::Keyboard::R)
-        sets_.render_mouse_ray = !sets_.render_mouse_ray;
+        settings_.render_mouse_ray = !settings_.render_mouse_ray;
       if (event.key.code == sf::Keyboard::C)
-        sets_.colormap = GUISettings::Colormap((sets_.colormap + 1) % GUISettings::COLORMAP_COUNT);
+        settings_.colormap =
+            GUISettings::Colormap((settings_.colormap + 1) % GUISettings::COLORMAP_COUNT);
       if (event.key.code == sf::Keyboard::M)
-        sets_.pts_display_mode = GUISettings::PtsDispayMode((sets_.pts_display_mode + 1) %
-                                                            GUISettings::PTS_DISPLAY_MODE_COUNT);
+        settings_.pts_display_mode = GUISettings::PtsDispayMode(
+            (settings_.pts_display_mode + 1) % GUISettings::PTS_DISPLAY_MODE_COUNT);
     }
 
     if (event.type == sf::Event::MouseWheelScrolled) {
-      sets_.autoscale = false;
+      settings_.autoscale = false;
       if (event.mouseWheelScroll.delta > 0)
-        sets_.scale *= 1.25;
+        settings_.scale *= 1.25;
       else if (event.mouseWheelScroll.delta < 0)
-        sets_.scale *= 0.8;
+        settings_.scale *= 0.8;
     } else if (event.type == sf::Event::MouseButtonPressed) {
       if (event.mouseButton.button == sf::Mouse::Middle) {
-        sets_.autoscale = true;
-        sets_.origin_y = sets_.height / 2;
-        sets_.origin_x = sets_.width / 2;
+        settings_.autoscale = true;
+        settings_.origin_y = settings_.height / 2;
+        settings_.origin_x = settings_.width / 2;
       }
     }
 
@@ -124,22 +125,22 @@ void GUI::handle_input(const Cloud& cloud) {
   }
 
   if (status_keys_[int(StatusKey::UP)])
-    sets_.origin_y += 25;
+    settings_.origin_y += 25;
   if (status_keys_[int(StatusKey::DOWN)])
-    sets_.origin_y -= 25;
+    settings_.origin_y -= 25;
   if (status_keys_[int(StatusKey::LEFT)])
-    sets_.origin_x += 25;
+    settings_.origin_x += 25;
   if (status_keys_[int(StatusKey::RIGHT)])
-    sets_.origin_x -= 25;
+    settings_.origin_x -= 25;
 }
 
 void GUI::render_grid() {
   for (int i = 0; i <= 30; i++) {
-    auto circle = sf::CircleShape(1000 * i * sets_.scale, 64);
+    auto circle = sf::CircleShape(1000 * i * settings_.scale, 64);
     circle.setOrigin(circle.getRadius() - 1, circle.getRadius() - 1);
-    circle.setPosition(sets_.origin_x, sets_.origin_y);
+    circle.setPosition(settings_.origin_x, settings_.origin_y);
     circle.setFillColor(Color::Transparent);
-    circle.setOutlineColor(sets_.color_grid);
+    circle.setOutlineColor(settings_.color_grid);
     if (i % 10 == 0)
       circle.setOutlineThickness(4);
     else
@@ -153,17 +154,18 @@ void GUI::render_cloud_bars(const Cloud& cloud) {
     return;
 
   unsigned max_width = 80;
-  for (int j = 0; j < sets_.height; j++) {
-    float dist = cloud.pts_cyl[size_t(j * cloud.size / sets_.height)].dist;
+  for (int j = 0; j < settings_.height; j++) {
+    float dist = cloud.points_cyl[size_t(j * cloud.size / settings_.height)].distance;
 
-    int width = int(std::round(dist / cloud.max * max_width));
+    int width = int(std::round(dist / cloud.max_distance * max_width));
 
     Color color;
-    if (sets_.colormap == GUISettings::FROM_ANGLE) {
-      color = calc_color_from_angle(float(j * cloud.size / sets_.height) / float(cloud.size));
-    } else if (sets_.colormap == GUISettings::FROM_DIST) {
-      color = calc_color_from_dist(cloud.pts_cyl[size_t(j * cloud.size / sets_.height)].dist,
-                                   cloud.max, 1.0);
+    if (settings_.colormap == GUISettings::FROM_ANGLE) {
+      color = calc_color_from_angle(float(j * cloud.size / settings_.height) / float(cloud.size));
+    } else if (settings_.colormap == GUISettings::FROM_DIST) {
+      color =
+          calc_color_from_dist(cloud.points_cyl[size_t(j * cloud.size / settings_.height)].distance,
+                               cloud.max_distance, 1.0);
     }
 
     auto rect = sf::RectangleShape(sf::Vector2f(width, 1));
@@ -178,16 +180,16 @@ void GUI::render_cloud(const Cloud& cloud, float lightness) {
     return;
 
   for (int i = 0; i < cloud.size; i++) {
-    if (cloud.pts_cyl[i].dist == 0)
+    if (cloud.points_cyl[i].distance == 0)
       continue;
 
     Color color;
-    if (sets_.colormap == GUISettings::FROM_ANGLE) {
+    if (settings_.colormap == GUISettings::FROM_ANGLE) {
       color = calc_color_from_angle(float(i) / float(cloud.size), lightness);
-    } else if (sets_.colormap == GUISettings::FROM_DIST) {
-      color = calc_color_from_dist(cloud.pts_cyl[i].dist, cloud.max, lightness);
+    } else if (settings_.colormap == GUISettings::FROM_DIST) {
+      color = calc_color_from_dist(cloud.points_cyl[i].distance, cloud.max_distance, lightness);
     }
-    render_point(cloud.pts_cart[i].x, cloud.pts_cart[i].y, color);
+    render_point(cloud.points_cart[i].x, cloud.points_cart[i].y, color);
   }
 }
 
@@ -197,23 +199,23 @@ void GUI::render_connected_cloud(const Cloud& cloud, float lightness, bool rende
 
   sf::VertexArray vertex_arr(sf::PrimitiveType::LinesStrip);
   for (int i = 0; i < cloud.size; i++) {
-    if (cloud.pts_cyl[i].dist == 0)
+    if (cloud.points_cyl[i].distance == 0)
       continue;
 
     Color color;
-    if (sets_.colormap == GUISettings::FROM_ANGLE) {
+    if (settings_.colormap == GUISettings::FROM_ANGLE) {
       color = calc_color_from_angle(float(i) / float(cloud.size), lightness);
-    } else if (sets_.colormap == GUISettings::FROM_DIST) {
-      color = calc_color_from_dist(cloud.pts_cyl[i].dist, cloud.max, lightness);
+    } else if (settings_.colormap == GUISettings::FROM_DIST) {
+      color = calc_color_from_dist(cloud.points_cyl[i].distance, cloud.max_distance, lightness);
     }
 
     if (render_points) {
-      render_point(cloud.pts_cart[i].x, cloud.pts_cart[i].y, color);
+      render_point(cloud.points_cart[i].x, cloud.points_cart[i].y, color);
     }
 
     color.a = 128;
-    sf::Vertex vertex(sf::Vector2f(cloud.pts_cart[i].x * sets_.scale + sets_.origin_x,
-                                   cloud.pts_cart[i].y * sets_.scale + sets_.origin_y),
+    sf::Vertex vertex(sf::Vector2f(cloud.points_cart[i].x * settings_.scale + settings_.origin_x,
+                                   cloud.points_cart[i].y * settings_.scale + settings_.origin_y),
                       color);
     vertex_arr.append(vertex);
   }
@@ -222,19 +224,21 @@ void GUI::render_connected_cloud(const Cloud& cloud, float lightness, bool rende
 }
 
 void GUI::render_point(int x, int y, const Color& color) {
-  auto pt = sf::CircleShape(sets_.bold_mode ? 5 : 2);
+  auto pt = sf::CircleShape(settings_.bold_mode ? 5 : 2);
 
   pt.setOrigin(1, 1);
-  pt.setPosition(x * sets_.scale + sets_.origin_x, y * sets_.scale + sets_.origin_y);
+  pt.setPosition(x * settings_.scale + settings_.origin_x,
+                 y * settings_.scale + settings_.origin_y);
   pt.setFillColor(color);
   window_.draw(pt);
 }
 
 void GUI::render_front_line(int x, int y) {
   sf::Vertex line[] = {
-      sf::Vertex(sf::Vector2f(sets_.origin_x, sets_.origin_y), sets_.color_grid),
-      sf::Vertex(sf::Vector2f(x * sets_.scale + sets_.origin_x, y * sets_.scale + sets_.origin_y),
-                 sets_.color_grid)};
+      sf::Vertex(sf::Vector2f(settings_.origin_x, settings_.origin_y), settings_.color_grid),
+      sf::Vertex(sf::Vector2f(x * settings_.scale + settings_.origin_x,
+                              y * settings_.scale + settings_.origin_y),
+                 settings_.color_grid)};
   window_.draw(line, 2, sf::Lines);
 }
 
@@ -244,11 +248,11 @@ bool GUI::save_screenshot() {
   std::ostringstream oss;
   oss << std::put_time(&tm, "%d.%m.%Y-%H.%M.%S");
 
-  auto filename = sets_.output_dir + "/screenshot-" + std::to_string(++screenshots_cnt_) + "-" +
+  auto filename = settings_.output_dir + "/screenshot-" + std::to_string(++screenshots_cnt_) + "-" +
                   oss.str() + ".png";
 
   sf::Texture texture;
-  texture.create(sets_.width, sets_.height);
+  texture.create(settings_.width, settings_.height);
   texture.update(window_);
 
   if (!texture.copyToImage().saveToFile(filename)) {
@@ -260,8 +264,8 @@ bool GUI::save_screenshot() {
   }
 }
 
-float GUI::calc_scale(float max_dist) {
-  return float(sets_.height) * 0.7f / max_dist;
+float GUI::calc_scale(float max_dist) const {
+  return float(settings_.height) * 0.7f / max_dist;
 }
 
 Color GUI::calc_color_from_angle(float v, float lightness) {

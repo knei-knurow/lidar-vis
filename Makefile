@@ -3,11 +3,11 @@ ROOT := ${CURDIR}
 CXX := g++
 CPPFLAGS := -std=c++17
 LIBS := -lsfml-graphics -lsfml-window -lsfml-system
-LDFLAGS += -L$(ROOT)/sfml/lib
-INCLUDES := -I$(ROOT)/sfml/include -I$(ROOT)/include
+LDFLAGS := -L$(ROOT)/sfml/lib
+INCLUDES := -I$(ROOT)/include -I$(ROOT)/sfml/include
 
-pcv: main.o app.o cloud.o cloud-grabbers.o gui.o scenarios.o
-	$(CXX) --output pcv \
+all: main.o app.o cloud.o cloud-grabbers.o gui.o scenarios.o
+	$(CXX) --output lidar-vis \
 	main.o \
 	app.o \
 	cloud.o \
@@ -35,5 +35,8 @@ gui.o: src/gui.cpp
 scenarios.o: src/scenarios.cpp
 	$(CXX) $(CPPFLAGS) -c src/scenarios.cpp $(INCLUDES)
 
+install:
+	cp ./lidar-vis /usr/local/bin
+
 clean:
-	rm -f *.o src/*.o pcv
+	rm -f *.o src/*.o lidar-vis

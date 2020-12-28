@@ -2,25 +2,25 @@
 
 App::App(std::vector<std::string>& args) {
   running_ = true;
-  if (!parse_args(args)) {
+  if (!parse_flags(args)) {
     running_ = false;
   }
 }
 
-App::~App() {}
+App::~App() = default;
 
 int App::run() {
   Cloud cloud;
 
   while (running_) {
-    // Grab cloud
+    // Grab a single cloud from the input...
     if (running_ && cloud_grabber_) {
       if (!cloud_grabber_->read(cloud)) {
         running_ = false;
       }
     }
 
-    // Update the GUI with new data
+    // ..and visualize it in the GUI
     // Save output files on user's request
     if (running_ && gui_) {
       if (!gui_->update(cloud)) {
@@ -34,17 +34,17 @@ int App::run() {
 
 void App::print_help() {
   std::cout << "-----------------------------------------------------------\n"
-            << "point cloud visualizations\n"
+            << "lidar-vis -- the point cloud visualization tool\n"
             << "-----------------------------------------------------------\n"
-            << "Source: https://github.com/knei-knurow/point-cloud-vis\n"
+            << "Source: https://github.com/knei-knurow/lidar-vis\n"
             << "\n"
             << "Usage:\n"
-            << "\tpcv [options]\n"
+            << "\tlidar-vis [options]\n"
             << "\n"
             << "Options:\n"
-            << "\tInput (required):\n"
-            << "\t-f  --file [filename]          input cloud filename\n"
-            << "\t-fs --file-series [filename]   input cloud series filename\n"
+            << "\tVisualization modes\n"
+            << "\t[default]                      single point cloud"
+            << "\t-s  --series                   point cloud series\n"
             << "\n"
             << "\tGeneral:\n"
             << "\t-h  --help                     display help\n"
@@ -75,9 +75,9 @@ void App::print_help() {
             << "";
 }
 
-bool App::check_arg(std::vector<std::string>& all_args,
-                    const std::string& short_arg,
-                    const std::string& long_arg) {
+bool App::is_flag_present(std::vector<std::string>& all_args,
+                          const std::string& short_arg,
+                          const std::string& long_arg) {
   auto it = std::find_if(
       all_args.begin(), all_args.end(),
       [short_arg, long_arg](const std::string& s) { return s == short_arg || s == long_arg; });
@@ -90,10 +90,10 @@ bool App::check_arg(std::vector<std::string>& all_args,
   return true;
 }
 
-std::string App::get_arg_value(std::vector<std::string>& all_args,
-                               const std::string& short_arg,
-                               const std::string& long_arg,
-                               const std::string& default_value) {
+std::string App::get_flag_value(std::vector<std::string>& all_args,
+                                const std::string& short_arg,
+                                const std::string& long_arg,
+                                const std::string& default_value) {
   auto it = std::find_if(
       all_args.begin(), all_args.end(),
       [short_arg, long_arg](const std::string& s) { return s == short_arg || s == long_arg; });
@@ -109,22 +109,18 @@ std::string App::get_arg_value(std::vector<std::string>& all_args,
   return value;
 }
 
-bool App::parse_args(std::vector<std::string>& args) {
+bool App::parse_flags(std::vector<std::string>& args) {
   // Print help
-  if (check_arg(args, "-h", "--help")) {
+  if (is_flag_present(args, "-h", "--help")) {
     print_help();
     return false;
   }
 
-  // Input cloud filename
-  std::string cloud_filename = get_arg_value(args, "-f", "--file");
-
-  // Input cloud series filename
-  std::string cloud_series_filename = get_arg_value(args, "-fs", "--file-series");
+  bool cloud_series = is_flag_present(args, "-s", "--series");
 
   // Scenario
   std::string scenario_val =
-      get_arg_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
+      get_flag_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
   ScenarioType scenario_type;
   if (scenario_val == std::to_string(int(ScenarioType::IDLE))) {
     scenario_type = ScenarioType::IDLE;
@@ -138,15 +134,18 @@ bool App::parse_args(std::vector<std::string>& args) {
   }
 
   // Initialize the cloud grabber
-  if (!cloud_series_filename.empty()) {
-    cloud_grabber_ = std::make_unique<CloudFileSeriesGrabber>(cloud_series_filename);
-    if (!cloud_grabber_->get_status())
+  if (!cloud_series) {
+    cloud_grabber_ = std::make_unique<SingleCloudGrabber>(0.2);
+    if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
-  } else if (!cloud_filename.empty()) {
-    cloud_grabber_ = std::make_unique<CloudFileGrabber>(cloud_filename, 0.2);
-    if (!cloud_grabber_->get_status())
+    }
+  } else {
+    cloud_grabber_ = std::make_unique<CloudSeriesGrabber>();
+    if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
+    }
   }
+
   if (!cloud_grabber_ && !gui_ && !scenario_) {
     print_help();
     return false;
@@ -157,21 +156,21 @@ bool App::parse_args(std::vector<std::string>& args) {
 
   unsigned colormap_temp = -1, display_mode_temp = -1;
 
-  std::stringstream(get_arg_value(args, "-W", "--width")) >> sfml_settings.width;
-  std::stringstream(get_arg_value(args, "-H", "--height")) >> sfml_settings.height;
+  std::stringstream(get_flag_value(args, "-W", "--width")) >> sfml_settings.width;
+  std::stringstream(get_flag_value(args, "-H", "--height")) >> sfml_settings.height;
 
-  if (bool(std::stringstream(get_arg_value(args, "-C", "--colormap")) >> colormap_temp))
+  if (bool(std::stringstream(get_flag_value(args, "-C", "--colormap")) >> colormap_temp))
     sfml_settings.colormap =
         static_cast<GUISettings::Colormap>(colormap_temp % GUISettings::Colormap::COLORMAP_COUNT);
 
-  if (bool(std::stringstream(get_arg_value(args, "-M", "--ptr-mode")) >> display_mode_temp))
+  if (bool(std::stringstream(get_flag_value(args, "-M", "--ptr-mode")) >> display_mode_temp))
     sfml_settings.pts_display_mode = static_cast<GUISettings::PtsDispayMode>(
         display_mode_temp % GUISettings::PtsDispayMode::PTS_DISPLAY_MODE_COUNT);
 
-  if (bool(std::stringstream(get_arg_value(args, "-S", "--scale")) >> sfml_settings.scale))
+  if (bool(std::stringstream(get_flag_value(args, "-S", "--scale")) >> sfml_settings.scale))
     sfml_settings.autoscale = false;
 
-  if (check_arg(args, "-B", "--bold"))
+  if (is_flag_present(args, "-B", "--bold"))
     sfml_settings.bold_mode = true;
 
   gui_ = std::make_unique<GUI>(sfml_settings);

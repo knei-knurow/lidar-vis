@@ -11,31 +11,31 @@ enum class ScenarioType {
   SCREENSHOT_SERIES,
 };
 
+/**
+ * Scenario is a set of actions which are executed just after grabbing the cloud data,
+ * but before its visualization by the GUI.
+ */
 class Scenario {
  public:
-  Scenario() : status_(true){};
-  virtual ~Scenario() {}
+  Scenario() = default;
+  virtual ~Scenario() = default;
   virtual bool update(Cloud& cloud) = 0;
-  inline virtual bool get_status() const { return status_; }
-  inline virtual ScenarioType get_type() const = 0;
-
- protected:
-  bool status_;
+  virtual ScenarioType get_type() const = 0;
 };
 
 class RecordSeriesScenario : public Scenario {
  public:
   RecordSeriesScenario();
-  virtual bool update(Cloud& cloud);
-  inline virtual ScenarioType get_type() const { return ScenarioType::RECORD_SERIES; }
+  bool update(Cloud& cloud) override;
+  inline ScenarioType get_type() const override { return ScenarioType::RECORD_SERIES; }
 };
 
 // Very slow
 class ScreenshotSeriesScenario : public Scenario {
  public:
-  ScreenshotSeriesScenario(std::function<bool()> screenshot_fn);
-  virtual bool update(Cloud& cloud);
-  inline virtual ScenarioType get_type() const { return ScenarioType::SCREENSHOT_SERIES; }
+  explicit ScreenshotSeriesScenario(std::function<bool()>& screenshot_fn);
+  bool update(Cloud& cloud) override;
+  inline ScenarioType get_type() const override { return ScenarioType::SCREENSHOT_SERIES; }
 
  private:
   std::function<bool()> screenshot_fn_;

@@ -1,12 +1,12 @@
 #include "scenarios.h"
 
-RecordSeriesScenario::RecordSeriesScenario() {}
+RecordSeriesScenario::RecordSeriesScenario() = default;
 
 bool RecordSeriesScenario::update(Cloud& cloud) {
   return true;
 }
 
-ScreenshotSeriesScenario::ScreenshotSeriesScenario(std::function<bool()> screenshot_fn) {
+ScreenshotSeriesScenario::ScreenshotSeriesScenario(std::function<bool()>& screenshot_fn) {
   screenshot_fn_ = screenshot_fn;
 }
 

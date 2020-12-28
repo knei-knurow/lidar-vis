@@ -30,8 +30,8 @@ struct GUISettings {
   bool running = true;
   unsigned width = 1280;
   unsigned height = 720;
-  int origin_x = width / 2;
-  int origin_y = height / 2;
+  unsigned int origin_x = width / 2;
+  unsigned origin_y = height / 2;
   float scale = 0.2;
   bool autoscale = true;
   Colormap colormap = FROM_ANGLE;
@@ -49,13 +49,16 @@ struct GUISettings {
   std::string output_dir = ".";
 };
 
+/**
+ * GUI is responsible for the visual layer of the application and interacting with the user.
+ */
 class GUI {
  public:
-  GUI(const GUISettings& settings);
+  explicit GUI(const GUISettings& settings);
   virtual bool update(const Cloud& cloud);
 
-  inline GUISettings settings() const { return sets_; }
-  inline GUISettings& settings() { return sets_; }
+  inline GUISettings settings() const { return settings_; }
+  inline GUISettings& settings() { return settings_; }
 
   bool save_screenshot();
   bool save_cloud(const Cloud& cloud);
@@ -79,11 +82,11 @@ class GUI {
   void render_point(int x, int y, const Color& color);
   void render_front_line(int x, int y);
 
-  float calc_scale(float max_dist);
-  Color calc_color_from_angle(float v, float lightness = 1.0f);
-  Color calc_color_from_dist(float dist, float max, float lightness = 1.0f);
+  float calc_scale(float max_dist) const;
+  static Color calc_color_from_angle(float v, float lightness = 1.0f);
+  static Color calc_color_from_dist(float dist, float max, float lightness = 1.0f);
 
-  GUISettings sets_;
+  GUISettings settings_;
   sf::RenderWindow window_;
   bool status_keys_[int(StatusKey::COUNT)];
   size_t screenshots_cnt_;

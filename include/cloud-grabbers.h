@@ -9,43 +9,41 @@
 #include <vector>
 #include "cloud.h"
 
-enum class CloudGrabberType {
-  FILE,
-  FILE_SERIES,
-};
-
 class CloudGrabber {
  public:
-  CloudGrabber() : status_(true){};
-  virtual ~CloudGrabber(){};
+  CloudGrabber() : ok_(true){};
+  virtual ~CloudGrabber() = default;
   virtual bool read(Cloud& cloud) = 0;
-  virtual bool get_status() const { return status_; }
+  virtual bool is_ok() const { return ok_; }
 
  protected:
-  bool status_;
+  bool ok_;
 };
 
-class CloudFileGrabber : public CloudGrabber {
+class SingleCloudGrabber : public CloudGrabber {
  public:
-  CloudFileGrabber(const std::string& filename, float rot_angle_ = 0.0f);
-  virtual bool read(Cloud& cloud);
+  explicit SingleCloudGrabber(float rot_angle_ = 0.0f);
+
+  /**
+   * Read reads from stdin and assign the result to its cloud parameter.
+   * @param cloud Pointer to the cloud to which the read data will be put.
+   * @return true if reading was successful, false otherwise
+   */
+  bool read(Cloud& cloud) override;
 
  private:
-  std::string filename_;
   float rot_angle_;
   Cloud cloud_;
 };
 
-class CloudFileSeriesGrabber : public CloudGrabber {
+class CloudSeriesGrabber : public CloudGrabber {
  public:
-  CloudFileSeriesGrabber(const std::string& filename);
-  virtual bool read(Cloud& cloud);
+  explicit CloudSeriesGrabber();
+  bool read(Cloud& cloud) override;
 
  private:
   bool open();
 
-  std::string filename_;
-  std::ifstream file_;
-  size_t clouds_cnt_;
+  size_t cloud_count_;
   std::chrono::steady_clock::time_point next_cloud_time_;
 };
