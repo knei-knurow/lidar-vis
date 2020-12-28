@@ -44,7 +44,7 @@ void App::print_help() {
             << "Options:\n"
             << "\tVisualization modes\n"
             << "\t[default]                      single point cloud"
-            << "\t-cs  --cloud-series            point cloud series\n"
+            << "\t-s  --series                   point cloud series\n"
             << "\n"
             << "\tGeneral:\n"
             << "\t-h  --help                     display help\n"
@@ -76,8 +76,8 @@ void App::print_help() {
 }
 
 bool App::is_flag_present(std::vector<std::string>& all_args,
-                    const std::string& short_arg,
-                    const std::string& long_arg) {
+                          const std::string& short_arg,
+                          const std::string& long_arg) {
   auto it = std::find_if(
       all_args.begin(), all_args.end(),
       [short_arg, long_arg](const std::string& s) { return s == short_arg || s == long_arg; });
@@ -91,9 +91,9 @@ bool App::is_flag_present(std::vector<std::string>& all_args,
 }
 
 std::string App::get_flag_value(std::vector<std::string>& all_args,
-                               const std::string& short_arg,
-                               const std::string& long_arg,
-                               const std::string& default_value) {
+                                const std::string& short_arg,
+                                const std::string& long_arg,
+                                const std::string& default_value) {
   auto it = std::find_if(
       all_args.begin(), all_args.end(),
       [short_arg, long_arg](const std::string& s) { return s == short_arg || s == long_arg; });
@@ -116,7 +116,7 @@ bool App::parse_flags(std::vector<std::string>& args) {
     return false;
   }
 
-  bool cloud_series = is_flag_present(args, "-cs", "--cloud-series");
+  bool cloud_series = is_flag_present(args, "-s", "--series");
 
   // Scenario
   std::string scenario_val =

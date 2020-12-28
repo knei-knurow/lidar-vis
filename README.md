@@ -65,40 +65,23 @@ coming soon (or never)
 ## Usage
 
 After successful compilation and linking, you will have a `pcv` executable.
-You can control its behavior using the options below:
+You can control its behavior by passing command-line flags.
 
-```
-pcv [options]
-```
+For example, to visualize a single cloud scan:
 
-### Options
+`$ cat cloud.txt | pcv`
 
-**Input (required)**:
+To visualize only the first 200 points of a single cloud scan:
 
-```
--f  --file [filename]          Input cloud filename
--fs --file-series [filename]   Input cloud series filename
--p  --port [portname]          Input RPLIDAR port*
-```
+`$ head -n 30 cloud.txt | pcv`
 
-**General:**
+To visualize a cloud series scan:
 
-```
--h  --help                     Display help
--o  --output-dir [dirname]     Output dir
--s  --scenario [id]            Specify scenario (default: 0)
-```
+`$ cat cloud_series.txt | pcv --series`
 
-**GUI options\*\***
+To learn more about all available options and keyboard shortcuts:
 
-```
--H  --height [val]              Window height (defualt: 1280)
--W  --width [val]               Window width (defualt: 720)
--C  --colormap [id]             Colormap (0, 1)
--M  --ptr-mode [id]             Points display mode (0, 1, 2)
--B  --bold                      Larger points
--S  --scale [scale]             Scale (1mm -> 1px for scale = 1.0)
-```
+`$ pcv --help`
 
 ### Scenarios
 
@@ -109,18 +92,6 @@ just before its visualization by the GUI.
 0    Do nothing, just grab a cloud and visualize (default).
 1    Save each cloud as a part of cloud series.
 2    Save each cloud as a new screenshot (extremely unoptimized).
-```
-
-**Keyboard shortcuts**
-
-```
-T                 Save cloud to .txt file
-S                 Save screenshot
-Arrows            Move cloud
-Moude scroll      Scale cloud
-Mouse middle      Reset position, autoscale cloud
-C                 Switch colormap
-M                 Switch points display mode
 ```
 
 ## Datasets
