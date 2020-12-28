@@ -35,5 +35,8 @@ gui.o: src/gui.cpp
 scenarios.o: src/scenarios.cpp
 	$(CXX) $(CPPFLAGS) -c src/scenarios.cpp $(INCLUDES)
 
+install:
+	cp ./lidar-vis /usr/local/bin
+
 clean:
 	rm -f *.o src/*.o lidar-vis
