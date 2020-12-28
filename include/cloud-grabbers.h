@@ -23,6 +23,12 @@ class CloudGrabber {
 class SingleCloudGrabber : public CloudGrabber {
  public:
   explicit SingleCloudGrabber(float rot_angle_ = 0.0f);
+
+  /**
+   * Read reads from stdin and assign the result to its cloud parameter.
+   * @param cloud Pointer to the cloud to which the read data will be put.
+   * @return true if reading was successful, false otherwise
+   */
   bool read(Cloud& cloud) override;
 
  private:

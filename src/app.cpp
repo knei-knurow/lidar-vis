@@ -2,7 +2,7 @@
 
 App::App(std::vector<std::string>& args) {
   running_ = true;
-  if (!parse_args(args)) {
+  if (!parse_flags(args)) {
     running_ = false;
   }
 }
@@ -75,7 +75,7 @@ void App::print_help() {
             << "";
 }
 
-bool App::check_arg(std::vector<std::string>& all_args,
+bool App::is_flag_present(std::vector<std::string>& all_args,
                     const std::string& short_arg,
                     const std::string& long_arg) {
   auto it = std::find_if(
@@ -90,7 +90,7 @@ bool App::check_arg(std::vector<std::string>& all_args,
   return true;
 }
 
-std::string App::get_arg_value(std::vector<std::string>& all_args,
+std::string App::get_flag_value(std::vector<std::string>& all_args,
                                const std::string& short_arg,
                                const std::string& long_arg,
                                const std::string& default_value) {
@@ -109,18 +109,18 @@ std::string App::get_arg_value(std::vector<std::string>& all_args,
   return value;
 }
 
-bool App::parse_args(std::vector<std::string>& args) {
+bool App::parse_flags(std::vector<std::string>& args) {
   // Print help
-  if (check_arg(args, "-h", "--help")) {
+  if (is_flag_present(args, "-h", "--help")) {
     print_help();
     return false;
   }
 
-  bool cloud_series = check_arg(args, "-cs", "--cloud-series");
+  bool cloud_series = is_flag_present(args, "-cs", "--cloud-series");
 
   // Scenario
   std::string scenario_val =
-      get_arg_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
+      get_flag_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
   ScenarioType scenario_type;
   if (scenario_val == std::to_string(int(ScenarioType::IDLE))) {
     scenario_type = ScenarioType::IDLE;
@@ -156,21 +156,21 @@ bool App::parse_args(std::vector<std::string>& args) {
 
   unsigned colormap_temp = -1, display_mode_temp = -1;
 
-  std::stringstream(get_arg_value(args, "-W", "--width")) >> sfml_settings.width;
-  std::stringstream(get_arg_value(args, "-H", "--height")) >> sfml_settings.height;
+  std::stringstream(get_flag_value(args, "-W", "--width")) >> sfml_settings.width;
+  std::stringstream(get_flag_value(args, "-H", "--height")) >> sfml_settings.height;
 
-  if (bool(std::stringstream(get_arg_value(args, "-C", "--colormap")) >> colormap_temp))
+  if (bool(std::stringstream(get_flag_value(args, "-C", "--colormap")) >> colormap_temp))
     sfml_settings.colormap =
         static_cast<GUISettings::Colormap>(colormap_temp % GUISettings::Colormap::COLORMAP_COUNT);
 
-  if (bool(std::stringstream(get_arg_value(args, "-M", "--ptr-mode")) >> display_mode_temp))
+  if (bool(std::stringstream(get_flag_value(args, "-M", "--ptr-mode")) >> display_mode_temp))
     sfml_settings.pts_display_mode = static_cast<GUISettings::PtsDispayMode>(
         display_mode_temp % GUISettings::PtsDispayMode::PTS_DISPLAY_MODE_COUNT);
 
-  if (bool(std::stringstream(get_arg_value(args, "-S", "--scale")) >> sfml_settings.scale))
+  if (bool(std::stringstream(get_flag_value(args, "-S", "--scale")) >> sfml_settings.scale))
     sfml_settings.autoscale = false;
 
-  if (check_arg(args, "-B", "--bold"))
+  if (is_flag_present(args, "-B", "--bold"))
     sfml_settings.bold_mode = true;
 
   gui_ = std::make_unique<GUI>(sfml_settings);

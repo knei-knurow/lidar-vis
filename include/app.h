@@ -12,16 +12,16 @@ class App {
   static void print_help();
 
  private:
-  static bool check_arg(std::vector<std::string>& all_args,
+  static bool is_flag_present(std::vector<std::string>& all_args,
                  const std::string& short_arg,
                  const std::string& long_arg);
 
-  static std::string get_arg_value(std::vector<std::string>& all_args,
+  static std::string get_flag_value(std::vector<std::string>& all_args,
                             const std::string& short_arg,
                             const std::string& long_arg,
                             const std::string& default_value = "");
 
-  bool parse_args(std::vector<std::string>& args);
+  bool parse_flags(std::vector<std::string>& args);
 
   bool running_;
   std::unique_ptr<CloudGrabber> cloud_grabber_;

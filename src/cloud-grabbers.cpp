@@ -9,11 +9,6 @@ SingleCloudGrabber::SingleCloudGrabber(float rot_angle) {
   }
 }
 
-/**
- * Read reads from stdin and assign the result to its cloud parameter.
- * @param cloud Pointer to the cloud to which the read data will be put.
- * @return true if reading was successful, false otherwise
- */
 bool SingleCloudGrabber::read(Cloud& cloud) {
   if (!ok_) {
     return false;
