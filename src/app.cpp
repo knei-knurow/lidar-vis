@@ -34,12 +34,12 @@ int App::run() {
 
 void App::print_help() {
   std::cout << "-----------------------------------------------------------\n"
-            << "point cloud visualizations\n"
+            << "lidar-vis -- the point cloud visualization tool\n"
             << "-----------------------------------------------------------\n"
-            << "Source: https://github.com/knei-knurow/point-cloud-vis\n"
+            << "Source: https://github.com/knei-knurow/lidar-vis\n"
             << "\n"
             << "Usage:\n"
-            << "\tpcv [options]\n"
+            << "\tlidar-vis [options]\n"
             << "\n"
             << "Options:\n"
             << "\tVisualization modes\n"

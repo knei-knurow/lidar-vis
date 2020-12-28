@@ -10,7 +10,7 @@ sfml/
 Release
 Debug
 *.o
-/pcv
+/lidar-vis
 /datasets/
 
 # other
