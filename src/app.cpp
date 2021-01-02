@@ -3,7 +3,7 @@
 
 App::App(std::vector<std::string>& args) {
   running_ = true;
-  if (!parse_flags(args)) {
+  if (!init(args)) {
     running_ = false;
   }
 }
@@ -110,7 +110,7 @@ std::string App::get_flag_value(std::vector<std::string>& all_args,
   return value;
 }
 
-bool App::parse_flags(std::vector<std::string>& args) {
+bool App::init(std::vector<std::string>& args) {
   // Print help
   if (is_flag_present(args, "-h", "--help")) {
     print_help();
@@ -130,7 +130,7 @@ bool App::parse_flags(std::vector<std::string>& args) {
   } else if (scenario_val == std::to_string(int(ScenarioType::SCREENSHOT_SERIES))) {
     scenario_type = ScenarioType::SCREENSHOT_SERIES;
   } else {
-    std::cerr << "error: invalid scenario id" << std::endl;
+    std::cerr << "lidar-vis: error: invalid scenario id" << std::endl;
     return false;
   }
 

@@ -8,14 +8,11 @@ GUI::GUI(const GUISettings& settings) {
   sf::ContextSettings window_settings;
   window_settings.antialiasingLevel = settings_.antialiasing;
 
-  // Load from a font file on disk
   if (!settings_.font.loadFromFile("arial.ttf")) {
     std::clog << "lidar-vis: error loading font file" << std::endl;
-  } else {
-    std::clog << "loaded font" << std::endl;
   }
 
-  window_.create(sf::VideoMode(settings_.width, settings_.height), "Lidar",
+  window_.create(sf::VideoMode(settings_.width, settings_.height), "lidar-vis",
                  sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize, window_settings);
 
   for (int i = 0; i < int(StatusKey::COUNT); i++) {
@@ -80,7 +77,7 @@ void GUI::handle_input(const Cloud& cloud) {
       settings_.origin_y = event.size.height / 2;
       sf::FloatRect visible_area(0, 0, event.size.width, event.size.height);
       window_.setView(sf::View(visible_area));
-      std::cout << "Window resized: " << event.size.width << "x" << event.size.height << std::endl;
+      std::cout << "lidar-vis: window resized: " << event.size.width << "x" << event.size.height << std::endl;
     }
     if (event.type == sf::Event::Closed)
       settings_.running = false;
@@ -274,10 +271,10 @@ bool GUI::save_screenshot() {
   texture.update(window_);
 
   if (!texture.copyToImage().saveToFile(filename)) {
-    std::cerr << "error: unable to save screenshot" << std::endl;
+    std::cerr << "lidar-vis: error: unable to save screenshot" << std::endl;
     return false;
   } else {
-    std::cout << "screenshot saved: " << filename << std::endl;
+    std::cout << "lidar-vis: screenshot saved to " << filename << std::endl;
     return true;
   }
 }
