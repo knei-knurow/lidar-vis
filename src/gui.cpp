@@ -77,7 +77,8 @@ void GUI::handle_input(const Cloud& cloud) {
       settings_.origin_y = event.size.height / 2;
       sf::FloatRect visible_area(0, 0, event.size.width, event.size.height);
       window_.setView(sf::View(visible_area));
-      std::cout << "lidar-vis: window resized: " << event.size.width << "x" << event.size.height << std::endl;
+      std::cout << "lidar-vis: window resized: " << event.size.width << "x" << event.size.height
+                << std::endl;
     }
     if (event.type == sf::Event::Closed)
       settings_.running = false;
