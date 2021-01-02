@@ -94,7 +94,6 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
       long long delay_ms = 0;
       char __;
       sline >> __ >> cloud.index >> delay_ms;
-      std::cout << "cloud index:" << cloud.index << std::endl;
       next_cloud_time_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(delay_ms);
       break;
     }

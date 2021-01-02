@@ -8,14 +8,12 @@ GUI::GUI(const GUISettings& settings) {
   sf::ContextSettings window_settings;
   window_settings.antialiasingLevel = settings_.antialiasing;
 
-  sf::Font font;
-
   // Load from a font file on disk
-  if (!font.loadFromFile("arial.ttf")) {
+  if (!settings_.font.loadFromFile("arial.ttf")) {
     std::clog << "lidar-vis: error loading font file" << std::endl;
+  } else {
+    std::clog << "loaded font" << std::endl;
   }
-
-  std::clog << "loaded font" << std::endl;
 
   window_.create(sf::VideoMode(settings_.width, settings_.height), "Lidar",
                  sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize, window_settings);
@@ -67,7 +65,7 @@ bool GUI::update(const Cloud& cloud) {
   render_point(0, 0, Color::Red);
 
   window_.display();
-  window_.setTitle("Scale: 1mm ->" + std::to_string(settings_.scale) + "px, cloud:" + std::to_string(cloud.index));
+  window_.setTitle("Scale: 1mm -> " + std::to_string(settings_.scale) + "px");
   sf::sleep(sf::milliseconds(settings_.sleep_time_ms));
   return true;
 }
@@ -254,11 +252,9 @@ void GUI::render_front_line(int x, int y) {
 }
 
 void GUI::render_text(const Cloud& cloud) {
-  sf::Text text;
-  text.setOrigin(400, 300);
-  text.setString(std::to_string(cloud.index));
-  text.setFont(settings_.font);
-  text.setCharacterSize(200);
+  std::string msg = "cloud " + std::to_string(cloud.index);
+  sf::Text text(msg, settings_.font, 48);
+  text.setPosition(settings_.width - (settings_.width / 4), 0);
   text.setFillColor(sf::Color::White);
 
   window_.draw(text);
