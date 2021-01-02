@@ -1,8 +1,9 @@
 #include "app.h"
+#include <algorithm>
 
 App::App(std::vector<std::string>& args) {
   running_ = true;
-  if (!parse_flags(args)) {
+  if (!init(args)) {
     running_ = false;
   }
 }
@@ -43,7 +44,7 @@ void App::print_help() {
             << "\n"
             << "Options:\n"
             << "\tVisualization modes\n"
-            << "\t[default]                      single point cloud"
+            << "\t[default]                      single point cloud\n"
             << "\t-s  --series                   point cloud series\n"
             << "\n"
             << "\tGeneral:\n"
@@ -109,18 +110,18 @@ std::string App::get_flag_value(std::vector<std::string>& all_args,
   return value;
 }
 
-bool App::parse_flags(std::vector<std::string>& args) {
+bool App::init(std::vector<std::string>& args) {
   // Print help
   if (is_flag_present(args, "-h", "--help")) {
     print_help();
     return false;
   }
 
-  bool cloud_series = is_flag_present(args, "-s", "--series");
-
-  // Scenario
+  bool is_cloud_series = is_flag_present(args, "-s", "--series");
   std::string scenario_val =
       get_flag_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
+
+  // Scenario
   ScenarioType scenario_type;
   if (scenario_val == std::to_string(int(ScenarioType::IDLE))) {
     scenario_type = ScenarioType::IDLE;
@@ -129,12 +130,12 @@ bool App::parse_flags(std::vector<std::string>& args) {
   } else if (scenario_val == std::to_string(int(ScenarioType::SCREENSHOT_SERIES))) {
     scenario_type = ScenarioType::SCREENSHOT_SERIES;
   } else {
-    std::cerr << "error: invalid scenario id" << std::endl;
+    std::cerr << "lidar-vis: error: invalid scenario id" << std::endl;
     return false;
   }
 
   // Initialize the cloud grabber
-  if (!cloud_series) {
+  if (!is_cloud_series) {
     cloud_grabber_ = std::make_unique<SingleCloudGrabber>(0.2);
     if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
@@ -159,19 +160,23 @@ bool App::parse_flags(std::vector<std::string>& args) {
   std::stringstream(get_flag_value(args, "-W", "--width")) >> sfml_settings.width;
   std::stringstream(get_flag_value(args, "-H", "--height")) >> sfml_settings.height;
 
-  if (bool(std::stringstream(get_flag_value(args, "-C", "--colormap")) >> colormap_temp))
+  if (bool(std::stringstream(get_flag_value(args, "-C", "--colormap")) >> colormap_temp)) {
     sfml_settings.colormap =
         static_cast<GUISettings::Colormap>(colormap_temp % GUISettings::Colormap::COLORMAP_COUNT);
+  }
 
-  if (bool(std::stringstream(get_flag_value(args, "-M", "--ptr-mode")) >> display_mode_temp))
-    sfml_settings.pts_display_mode = static_cast<GUISettings::PtsDispayMode>(
-        display_mode_temp % GUISettings::PtsDispayMode::PTS_DISPLAY_MODE_COUNT);
+  if (bool(std::stringstream(get_flag_value(args, "-M", "--ptr-mode")) >> display_mode_temp)) {
+    sfml_settings.points_display_mode = static_cast<GUISettings::PointsDispayMode>(
+        display_mode_temp % GUISettings::PointsDispayMode::PTS_DISPLAY_MODE_COUNT);
+  }
 
-  if (bool(std::stringstream(get_flag_value(args, "-S", "--scale")) >> sfml_settings.scale))
+  if (bool(std::stringstream(get_flag_value(args, "-S", "--scale")) >> sfml_settings.scale)) {
     sfml_settings.autoscale = false;
+  }
 
-  if (is_flag_present(args, "-B", "--bold"))
+  if (is_flag_present(args, "-B", "--bold")) {
     sfml_settings.bold_mode = true;
+  }
 
   gui_ = std::make_unique<GUI>(sfml_settings);
 

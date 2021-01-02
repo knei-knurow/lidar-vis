@@ -8,7 +8,11 @@ GUI::GUI(const GUISettings& settings) {
   sf::ContextSettings window_settings;
   window_settings.antialiasingLevel = settings_.antialiasing;
 
-  window_.create(sf::VideoMode(settings_.width, settings_.height), "Lidar",
+  if (!settings_.font.loadFromFile("arial.ttf")) {
+    std::clog << "lidar-vis: error loading font file" << std::endl;
+  }
+
+  window_.create(sf::VideoMode(settings_.width, settings_.height), "lidar-vis",
                  sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize, window_settings);
 
   for (int i = 0; i < int(StatusKey::COUNT); i++) {
@@ -44,19 +48,21 @@ bool GUI::update(const Cloud& cloud) {
 
     render_front_line(cloud.points_cart.front().x, cloud.points_cart.front().y);
 
-    if (settings_.pts_display_mode == GUISettings::DOTS_LINES) {
+    if (settings_.points_display_mode == GUISettings::DOTS_LINES) {
       render_connected_cloud(cloud);
-    } else if (settings_.pts_display_mode == GUISettings::DOTS) {
+    } else if (settings_.points_display_mode == GUISettings::DOTS) {
       render_cloud(cloud);
-    } else if (settings_.pts_display_mode == GUISettings::LINES) {
+    } else if (settings_.points_display_mode == GUISettings::LINES) {
       render_connected_cloud(cloud, 1.0, false);
     }
   }
 
+  render_text(cloud);
+
   render_point(0, 0, Color::Red);
 
   window_.display();
-  window_.setTitle("Scale: 1mm ->" + std::to_string(settings_.scale) + "px");
+  window_.setTitle("Scale: 1mm -> " + std::to_string(settings_.scale) + "px");
   sf::sleep(sf::milliseconds(settings_.sleep_time_ms));
   return true;
 }
@@ -71,7 +77,8 @@ void GUI::handle_input(const Cloud& cloud) {
       settings_.origin_y = event.size.height / 2;
       sf::FloatRect visible_area(0, 0, event.size.width, event.size.height);
       window_.setView(sf::View(visible_area));
-      std::cout << "Window resized: " << event.size.width << "x" << event.size.height << std::endl;
+      std::cout << "lidar-vis: window resized: " << event.size.width << "x" << event.size.height
+                << std::endl;
     }
     if (event.type == sf::Event::Closed)
       settings_.running = false;
@@ -94,8 +101,8 @@ void GUI::handle_input(const Cloud& cloud) {
         settings_.colormap =
             GUISettings::Colormap((settings_.colormap + 1) % GUISettings::COLORMAP_COUNT);
       if (event.key.code == sf::Keyboard::M)
-        settings_.pts_display_mode = GUISettings::PtsDispayMode(
-            (settings_.pts_display_mode + 1) % GUISettings::PTS_DISPLAY_MODE_COUNT);
+        settings_.points_display_mode = GUISettings::PointsDispayMode(
+            (settings_.points_display_mode + 1) % GUISettings::PTS_DISPLAY_MODE_COUNT);
     }
 
     if (event.type == sf::Event::MouseWheelScrolled) {
@@ -242,6 +249,15 @@ void GUI::render_front_line(int x, int y) {
   window_.draw(line, 2, sf::Lines);
 }
 
+void GUI::render_text(const Cloud& cloud) {
+  std::string msg = "cloud " + std::to_string(cloud.index);
+  sf::Text text(msg, settings_.font, 48);
+  text.setPosition(settings_.width - (settings_.width / 4), 0);
+  text.setFillColor(sf::Color::White);
+
+  window_.draw(text);
+}
+
 bool GUI::save_screenshot() {
   auto t = std::time(nullptr);
   auto tm = *std::localtime(&t);
@@ -256,10 +272,10 @@ bool GUI::save_screenshot() {
   texture.update(window_);
 
   if (!texture.copyToImage().saveToFile(filename)) {
-    std::cerr << "error: unable to save screenshot" << std::endl;
+    std::cerr << "lidar-vis: error: unable to save screenshot" << std::endl;
     return false;
   } else {
-    std::cout << "screenshot saved: " << filename << std::endl;
+    std::cout << "lidar-vis: screenshot saved to " << filename << std::endl;
     return true;
   }
 }

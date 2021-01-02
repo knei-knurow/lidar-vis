@@ -4,7 +4,7 @@ SingleCloudGrabber::SingleCloudGrabber(float rot_angle) {
   rot_angle_ = rot_angle;
   ok_ = std::cin.good();
   if (!ok_) {
-    std::cerr << "error: file does not contain a valid cloud" << std::endl;
+    std::cerr << "lidar-vis: error: file does not contain a valid cloud" << std::endl;
     ok_ = false;
   }
 }
@@ -43,7 +43,7 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
     }
 
     if (cloud_.size == 0) {
-      std::cerr << "error: file does not contain a valid cloud" << std::endl;
+      std::cerr << "lidar-vis: error: file does not contain a valid cloud" << std::endl;
       ok_ = false;
     }
     cloud = cloud_;
@@ -91,9 +91,9 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
     if (line.empty() || line[0] == '#') {
       continue;
     } else if (line[0] == '!') {
-      long long _, delay_ms = 0;
+      long long delay_ms = 0;
       char __;
-      sline >> __ >> _ >> delay_ms;
+      sline >> __ >> cloud.index >> delay_ms;
       next_cloud_time_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(delay_ms);
       break;
     }
@@ -114,14 +114,14 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
   }
 
   if (cloud.size == 0 && cloud_count_ == 0) {
-    std::cerr << "error: file does not contain a valid cloud" << std::endl;
+    std::cerr << "lidar-vis: error: file does not contain a valid cloud" << std::endl;
     ok_ = false;
   }
 
   cloud_count_++;
 
   if (cloud.size == 0) {
-    std::cerr << "Cloud series end." << std::endl;
+    std::cerr << "lidar-vis: cloud series end" << std::endl;
     next_cloud_time_ += std::chrono::milliseconds(1000);
     std::cin.clear();
     std::cin.seekg(0);
@@ -141,7 +141,7 @@ bool CloudSeriesGrabber::open() {
   }
 
   if (!std::cin.good()) {
-    std::cerr << "error: file does not contain a valid cloud series" << std::endl;
+    std::cerr << "lidar-vis: error: file does not contain a valid cloud series" << std::endl;
     ok_ = false;
   }
 

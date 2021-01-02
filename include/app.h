@@ -21,7 +21,13 @@ class App {
                             const std::string& long_arg,
                             const std::string& default_value = "");
 
-  bool parse_flags(std::vector<std::string>& args);
+  /**
+   * Init performs command-line argument and flag parsing. Then it initializes
+   * core components like cloud grabbers and GUI.
+   * @param args command-line arguments and flags
+   * @return true if successful, false otherwise
+   */
+  bool init(std::vector<std::string>& args);
 
   bool running_;
   std::unique_ptr<CloudGrabber> cloud_grabber_;
