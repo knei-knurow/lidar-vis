@@ -19,7 +19,7 @@ struct GUISettings {
     COLORMAP_COUNT,
   };
 
-  enum PtsDispayMode {
+  enum PointsDispayMode {
     DOTS_LINES,
     DOTS,
     LINES,
@@ -35,7 +35,7 @@ struct GUISettings {
   float scale = 0.2;
   bool autoscale = true;
   Colormap colormap = FROM_ANGLE;
-  PtsDispayMode pts_display_mode = DOTS_LINES;
+  PointsDispayMode points_display_mode = DOTS_LINES;
   sf::Font font;
   float sleep_time_ms = 1000.0f / 30.0f;
 

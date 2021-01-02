@@ -51,11 +51,11 @@ bool GUI::update(const Cloud& cloud) {
 
     render_front_line(cloud.points_cart.front().x, cloud.points_cart.front().y);
 
-    if (settings_.pts_display_mode == GUISettings::DOTS_LINES) {
+    if (settings_.points_display_mode == GUISettings::DOTS_LINES) {
       render_connected_cloud(cloud);
-    } else if (settings_.pts_display_mode == GUISettings::DOTS) {
+    } else if (settings_.points_display_mode == GUISettings::DOTS) {
       render_cloud(cloud);
-    } else if (settings_.pts_display_mode == GUISettings::LINES) {
+    } else if (settings_.points_display_mode == GUISettings::LINES) {
       render_connected_cloud(cloud, 1.0, false);
     }
   }
@@ -103,8 +103,8 @@ void GUI::handle_input(const Cloud& cloud) {
         settings_.colormap =
             GUISettings::Colormap((settings_.colormap + 1) % GUISettings::COLORMAP_COUNT);
       if (event.key.code == sf::Keyboard::M)
-        settings_.pts_display_mode = GUISettings::PtsDispayMode(
-            (settings_.pts_display_mode + 1) % GUISettings::PTS_DISPLAY_MODE_COUNT);
+        settings_.points_display_mode = GUISettings::PointsDispayMode(
+            (settings_.points_display_mode + 1) % GUISettings::PTS_DISPLAY_MODE_COUNT);
     }
 
     if (event.type == sf::Event::MouseWheelScrolled) {
