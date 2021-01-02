@@ -91,9 +91,10 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
     if (line.empty() || line[0] == '#') {
       continue;
     } else if (line[0] == '!') {
-      long long _, delay_ms = 0;
+      long long delay_ms = 0;
       char __;
-      sline >> __ >> _ >> delay_ms;
+      sline >> __ >> cloud.index >> delay_ms;
+      std::cout << "cloud index:" << cloud.index << std::endl;
       next_cloud_time_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(delay_ms);
       break;
     }

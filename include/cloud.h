@@ -28,4 +28,5 @@ struct Cloud {
   size_t max_distance_index = -1;
   size_t min_distance_index = -1;
   size_t size = 0;
+  int index = 0;
 };

@@ -36,6 +36,7 @@ struct GUISettings {
   bool autoscale = true;
   Colormap colormap = FROM_ANGLE;
   PtsDispayMode pts_display_mode = DOTS_LINES;
+  sf::Font font;
   float sleep_time_ms = 1000.0f / 30.0f;
 
   Color color_background = Color(16, 16, 24);
@@ -81,6 +82,7 @@ class GUI {
                               bool render_points = true);
   void render_point(int x, int y, const Color& color);
   void render_front_line(int x, int y);
+  void render_text(const Cloud& cloud);
 
   float calc_scale(float max_dist) const;
   static Color calc_color_from_angle(float v, float lightness = 1.0f);
