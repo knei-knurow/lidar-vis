@@ -90,7 +90,9 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
 
     if (line.empty() || line[0] == '#') {
       continue;
-    } else if (line[0] == '!') {
+    }
+
+    if (line[0] == '!') {
       long long delay_ms = 0;
       char __;
       sline >> __ >> cloud.index >> delay_ms;
