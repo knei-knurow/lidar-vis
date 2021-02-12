@@ -5,12 +5,10 @@ Easily visualize point cloud data (e.g from LIDAR).
 ## Table of contents
 
 - [Gallery](#gallery)
-- [Binaries](#binaries)
+- [Usage](#usage)
 - [Compilation](#compilation)
   - [Linux, MacOS](#linux-macos)
   - [Windows (Visual Studio)](#windows-visual-studio)
-- [Usage](#usage)
-
 
 ## Gallery
 
@@ -25,33 +23,6 @@ Outdoor scan (passing cars visible)
 Outdoor scan (lots of trees and shrubs around)
 
 ![doc/screenshots/garden.gif](doc/screenshots/garden.gif)
-
-## Binaries
-
-We're still figuring out the automation process, so if you want
-to run the program, you have to compile it yourself.
-
-## Compilation
-
-### Linux, MacOS
-
-1. Install SFML:
-
-   ```
-   ./install_sfml
-   ```
-
-2. Build:
-
-   ```
-   make
-   ```
-
-3. Run.
-
-### Windows (Visual Studio)
-
-coming soon (or never)
 
 ## Usage
 
@@ -73,3 +44,27 @@ To visualize a cloud series scan:
 To learn more about all available options and keyboard shortcuts:
 
 `$ lidar-vis --help`
+
+## Compilation
+
+### Linux, macOS
+
+1. Install SFML:
+
+   `$ ./install_sfml`
+
+2. Build:
+
+   `$ make`
+
+3. Run:
+
+   `$ ./lidar-vis`
+
+4. Install (Optional):
+
+   `$ make install`
+
+### Windows (Visual Studio)
+
+coming soon (or never)
