@@ -16,15 +16,16 @@ int App::run() {
   while (running_) {
     // Grab a single cloud from the input...
     if (running_ && cloud_grabber_) {
-      if (!cloud_grabber_->read(cloud)) {
+      bool ok = cloud_grabber_->read(cloud);
+      if (!ok) {
         running_ = false;
       }
     }
 
     // ..and visualize it in the GUI
-    // Save output files on user's request
     if (running_ && gui_) {
-      if (!gui_->update(cloud)) {
+      bool ok = gui_->update(cloud);
+      if (!ok) {
         running_ = false;
       }
     }
@@ -189,7 +190,7 @@ bool App::init(std::vector<std::string>& args) {
   }
 
   if (!args.empty()) {
-    std::cerr << "warning: unused command line arguments: ";
+    std::cerr << "lidar-vis: warning: unused command line arguments: ";
     for (const auto& unused_arg : args) {
       std::cerr << "\"" << unused_arg << "\" ";
     }

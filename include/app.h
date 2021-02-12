@@ -13,13 +13,13 @@ class App {
 
  private:
   static bool is_flag_present(std::vector<std::string>& all_args,
-                 const std::string& short_arg,
-                 const std::string& long_arg);
+                              const std::string& short_arg,
+                              const std::string& long_arg);
 
   static std::string get_flag_value(std::vector<std::string>& all_args,
-                            const std::string& short_arg,
-                            const std::string& long_arg,
-                            const std::string& default_value = "");
+                                    const std::string& short_arg,
+                                    const std::string& long_arg,
+                                    const std::string& default_value = "");
 
   /**
    * Init performs command-line argument and flag parsing. Then it initializes
