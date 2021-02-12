@@ -11,7 +11,7 @@ SingleCloudGrabber::SingleCloudGrabber(float rot_angle) {
 
 bool SingleCloudGrabber::read(Cloud& cloud) {
   if (!ok_) {
-    return false;
+          return false;
   }
 
   if (cloud_.size == 0) {
