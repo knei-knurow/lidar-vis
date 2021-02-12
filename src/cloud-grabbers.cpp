@@ -20,7 +20,7 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
       std::getline(std::cin, line);
 
       if (line.empty() || line[0] == '#') {
-        continue;
+            continue;
       }
 
       PointCyl point_cyl;
