@@ -10,7 +10,7 @@ SingleCloudGrabber::SingleCloudGrabber(float rot_angle) {
 }
 
 bool SingleCloudGrabber::read(Cloud& cloud) {
-  if (!ok_) {
+      if (!ok_) {
     return false;
   }
 
