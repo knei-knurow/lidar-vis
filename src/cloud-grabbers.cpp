@@ -15,7 +15,7 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
   }
 
   if (cloud_.size == 0) {
-    while (std::cin) {
+              while (std::cin) {
       std::string line;
       std::getline(std::cin, line);
 
