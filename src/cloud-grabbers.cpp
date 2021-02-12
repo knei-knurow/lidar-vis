@@ -23,7 +23,7 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
             continue;
       }
 
-      PointCyl point_cyl;
+        PointCyl point_cyl;
       std::stringstream line_stream(line);
       line_stream >> point_cyl.angle >> point_cyl.distance;
 
