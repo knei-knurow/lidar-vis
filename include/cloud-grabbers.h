@@ -48,3 +48,15 @@ class CloudSeriesGrabber : public CloudGrabber {
   size_t cloud_count_;
   std::chrono::steady_clock::time_point next_cloud_time_;
 };
+
+class PointStreamGrabber : public CloudGrabber {
+public:
+	explicit PointStreamGrabber();
+	bool read(Cloud& cloud) override;
+
+	long long get_last_timestamp() const;
+private:
+	bool process_line(const std::string& line, Cloud& cloud);
+
+	long long last_timestamp_;
+};

@@ -149,3 +149,40 @@ bool CloudSeriesGrabber::open() {
 
   return ok_;
 }
+
+PointStreamGrabber::PointStreamGrabber() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(0);
+    ok_ = std::cin.good();
+    last_timestamp_ = 0;
+}
+
+bool PointStreamGrabber::read(Cloud& cloud) {
+    std::string line;
+    std::getline(std::cin, line);
+    process_line(line, cloud);
+    while (line.empty() || line[0] == '#') {
+        std::getline(std::cin, line);
+        process_line(line, cloud);
+    }
+    return ok_;
+}
+
+bool PointStreamGrabber::process_line(const std::string & line, Cloud & cloud) {
+    std::stringstream sline(line);
+    PointCyl pt_cyl;
+    sline >> pt_cyl.angle >> pt_cyl.distance >> last_timestamp_;
+    PointCart pt_cart = pt_cyl.to_cart();
+    cloud.points_cyl = { pt_cyl };
+    cloud.points_cart = { pt_cart };
+    cloud.min_distance = std::min(pt_cyl.distance, cloud.min_distance);
+    cloud.max_distance = std::max(pt_cyl.distance, cloud.max_distance);
+    cloud.max_distance_index = 0;
+    cloud.min_distance_index = 0;
+    cloud.size = 1;
+    return ok_;
+}
+
+long long PointStreamGrabber::get_last_timestamp() const {
+    return last_timestamp_;
+}

@@ -47,6 +47,7 @@ void App::print_help() {
             << "\tVisualization modes\n"
             << "\t[default]                      single point cloud\n"
             << "\t-s  --series                   point cloud series\n"
+            << "\t-p  --stream                   point-by-point stream\n"
             << "\n"
             << "\tGeneral:\n"
             << "\t-h  --help                     display help\n"
@@ -119,6 +120,7 @@ bool App::init(std::vector<std::string>& args) {
   }
 
   bool is_cloud_series = is_flag_present(args, "-s", "--series");
+  bool is_point_stream = is_flag_present(args, "-p", "--stream");
   std::string scenario_val =
       get_flag_value(args, "-s", "--scenario", std::to_string(int(ScenarioType::IDLE)));
 
@@ -136,7 +138,13 @@ bool App::init(std::vector<std::string>& args) {
   }
 
   // Initialize the cloud grabber
-  if (!is_cloud_series) {
+  if (is_point_stream) {
+    cloud_grabber_ = std::make_unique<PointStreamGrabber>();
+    if (!cloud_grabber_->is_ok()) {
+        cloud_grabber_.reset(nullptr);
+    }
+  }
+  else if (!is_cloud_series) {
     cloud_grabber_ = std::make_unique<SingleCloudGrabber>(0.2);
     if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
