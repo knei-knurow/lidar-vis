@@ -67,4 +67,4 @@ To learn more about all available options and keyboard shortcuts:
 
 ### Windows (Visual Studio)
 
-coming soon (or never)
+The Visual Studio solution file is placed in `vs` directory. SFML is required. More detailed description can be found in [lidar-visualizations](https://github.com/knei-knurow/lidar-visualizatoins) repository.
