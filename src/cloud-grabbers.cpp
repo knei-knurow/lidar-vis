@@ -62,8 +62,9 @@ bool SingleCloudGrabber::read(Cloud& cloud) {
   return ok_;
 }
 
-CloudSeriesGrabber::CloudSeriesGrabber() {
+CloudSeriesGrabber::CloudSeriesGrabber(bool ignore_sleep) {
   cloud_count_ = 0;
+  ignore_sleep_ = ignore_sleep;
   open();
   next_cloud_time_ = std::chrono::steady_clock::now();
 }
@@ -73,11 +74,11 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
     return false;
   }
 
-  if (std::chrono::steady_clock::now() < next_cloud_time_) {
+  if (!ignore_sleep_ && std::chrono::steady_clock::now() < next_cloud_time_) {
     std::this_thread::sleep_until(next_cloud_time_);
   }
 
-  if (cloud.size == 0) {
+  if (!ignore_sleep_ && cloud.size == 0) {
     next_cloud_time_ = std::chrono::steady_clock::now();
   }
 
@@ -96,7 +97,8 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
       long long delay_ms = 0;
       char __;
       sline >> __ >> cloud.index >> delay_ms;
-      next_cloud_time_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(delay_ms);
+      if (!ignore_sleep_)
+        next_cloud_time_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(delay_ms);
       break;
     }
     sline >> pt_cyl.angle >> pt_cyl.distance;
@@ -124,7 +126,8 @@ bool CloudSeriesGrabber::read(Cloud& cloud) {
 
   if (cloud.size == 0) {
     std::cerr << "lidar-vis: cloud series end" << std::endl;
-    next_cloud_time_ += std::chrono::milliseconds(1000);
+    if (!ignore_sleep_)
+      next_cloud_time_ += std::chrono::milliseconds(1000);
     std::cin.clear();
     std::cin.seekg(0);
     ok_ = open();
