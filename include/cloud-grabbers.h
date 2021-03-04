@@ -39,12 +39,13 @@ class SingleCloudGrabber : public CloudGrabber {
 
 class CloudSeriesGrabber : public CloudGrabber {
  public:
-  explicit CloudSeriesGrabber();
+  explicit CloudSeriesGrabber(bool ignore_sleep);
   bool read(Cloud& cloud) override;
 
  private:
   bool open();
 
   size_t cloud_count_;
+  bool ignore_sleep_;
   std::chrono::steady_clock::time_point next_cloud_time_;
 };

@@ -142,7 +142,7 @@ bool App::init(std::vector<std::string>& args) {
       cloud_grabber_.reset(nullptr);
     }
   } else {
-    cloud_grabber_ = std::make_unique<CloudSeriesGrabber>();
+    cloud_grabber_ = std::make_unique<CloudSeriesGrabber>(true);
     if (!cloud_grabber_->is_ok()) {
       cloud_grabber_.reset(nullptr);
     }
