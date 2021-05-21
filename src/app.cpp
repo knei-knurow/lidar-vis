@@ -63,7 +63,6 @@ void App::print_help() {
             << "\n"
             << "Scenarios:\n"
             << "\t0    do nothing, just grab a cloud and visualize (default)\n"
-            << "\t1    save each cloud as a part of cloud series\n"
             << "\t2    save each cloud as a new screenshot (extremely unoptimized)\n"
             << "\n"
             << "\tKeyboard Shortcuts:\n"
