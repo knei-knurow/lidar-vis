@@ -9,12 +9,12 @@ Easily visualize point cloud data (e.g from LIDAR). Based on [lidar-visualizatio
   - [Linux, MacOS](#linux-macos)
   - [Windows (Visual Studio)](#windows-visual-studio)
 - [Usage](#usage)
-   - [Options](#options)
-   - [Scenarios](#scenarios)
-   - [GUI](#gui)
+  - [Options](#options)
+  - [Scenarios](#scenarios)
+  - [GUI](#gui)
 - [Input](#usage)
-   - [Point cloud](#point-cloud)
-   - [Point cloud series](#point-cloud-series)
+  - [Point cloud](#point-cloud)
+  - [Point cloud series](#point-cloud-series)
 
 ## Gallery
 
@@ -50,6 +50,25 @@ Outdoor scan (lots of trees and shrubs around)
 
    `$ make install`
 
+### Troubleshooting
+
+You will probably encounter an error looking like this:
+
+```
+dyld: Library not loaded: @rpath/libsfml-graphics.2.5.dylib
+  Referenced from: /Users/bartek/dev/cpp/lidar-vis/./lidar-vis
+  Reason: image not found
+[1]    45637 done       cat datasets/series/from_stream.txt |
+       45638 abort      ./lidar-vis -s
+```
+
+To fix this, set `LD_LIBRARY_PATH` environment variable (of course, change the path accordingly):
+
+`$ export LD_LIBRARY_PATH=/Users/bartek/dev/cpp/lidar-vis/sfml/lib`
+
+If you're on macOS and getting an error similar, but a bit different to the one shown above, check
+out [this StackOverflow thread](https://stackoverflow.com/questions/44579656/sfml-library-not-loaded-error-image-not-found).
+
 ### Windows (Visual Studio)
 
 The Visual Studio solution file is placed in `vs` directory. SFML is required. More detailed description can be found in [lidar-visualizations](https://github.com/knei-knurow/lidar-visualizatoins) repository.
@@ -74,8 +93,6 @@ To visualize a cloud series scan:
 To learn more about all available options and keyboard shortcuts:
 
 `$ lidar-vis --help`
-
-
 
 ### Options
 
