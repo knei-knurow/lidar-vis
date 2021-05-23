@@ -18,17 +18,19 @@ Easily visualize point cloud data (e.g from LIDAR). Based on [lidar-visualizatio
 
 ## Gallery
 
-Indoor scan
+Video: [https://www.youtube.com/watch?v=MQhYTqz40xI](https://www.youtube.com/watch?v=MQhYTqz40xI)
 
-![doc/screenshots/garden.gif](doc/screenshots/room.gif)
+Indoor – walking around the house:
 
-Outdoor scan (passing cars visible)
+![doc/screenshots/garden.gif](https://raw.githubusercontent.com/knei-knurow/lidar-visualizations/main/doc/screenshots/room.gif)
 
-![doc/screenshots/cars.gif](doc/screenshots/cars.gif)
+Outdoor near street – passing cars can be seen:
 
-Outdoor scan (lots of trees and shrubs around)
+![doc/screenshots/cars.gif](https://raw.githubusercontent.com/knei-knurow/lidar-visualizations/main/doc/screenshots/cars.gif)
 
-![doc/screenshots/garden.gif](doc/screenshots/garden.gif)
+Outdoor – lots of trees and shrubs around:
+
+![doc/screenshots/garden.gif](https://raw.githubusercontent.com/knei-knurow/lidar-visualizations/main/doc/screenshots/garden.gif)
 
 ## Compilation
 
@@ -168,7 +170,7 @@ point number, and have to be separated by any kind of white characters.
 lidar -f datasets/example.txt
 ```
 
-![doc/screenshots/example.gif](doc/screenshots/example.jpg)
+![doc/screenshots/example.gif](https://raw.githubusercontent.com/knei-knurow/lidar-visualizations/main/doc/screenshots/example.jpg)
 
 ### Point cloud series
 
@@ -205,4 +207,4 @@ Preview:
 lidar -fs datasets/example-series.txt
 ```
 
-![doc/screenshots/example.gif](doc/screenshots/example-series.gif)
+![doc/screenshots/example.gif](https://raw.githubusercontent.com/knei-knurow/lidar-visualizations/main/doc/screenshots/example-series.gif)
